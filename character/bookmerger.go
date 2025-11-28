@@ -29,6 +29,10 @@ func NewBookMerger() *BookMerger {
 
 // AppendBook appends the given lorebook
 func (bm *BookMerger) AppendBook(book *Book) {
+	if book == nil {
+		return
+	}
+
 	if len(book.Entries) == 0 {
 		book.Entries = []*BookEntry{FilledBookEntry(string(book.Name), string(book.Description))}
 		book.Description = property.String(stringsx.Empty)
