@@ -5,7 +5,7 @@ go 1.25.4
 require (
 	github.com/gen2brain/jpegli v0.3.4
 	github.com/google/go-cmp v0.7.0
-	github.com/r3dpixel/toolkit v1.0.8
+	github.com/r3dpixel/toolkit v1.0.9
 	github.com/spf13/cast v1.10.0
 	github.com/stretchr/testify v1.11.1
 	github.com/sunshineplan/imgconv v1.1.14

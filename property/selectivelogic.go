@@ -10,6 +10,7 @@ import (
 	"github.com/spf13/cast"
 )
 
+// SelectiveLogic values
 const (
 	SelectiveAndAny SelectiveLogic = iota // Starts at 0
 	SelectiveNotAll
@@ -21,12 +22,16 @@ const (
 	DefaultSelectiveLogic = SelectiveAndAny // DefaultSelectiveLogic is SelectiveAndAny
 )
 
+// SelectiveLogic represents the selective logic of a book entry
 type SelectiveLogic int
 
+// OnFloat converts the float value to an integer and sets the SelectiveLogic to the corresponding value
 func (s *SelectiveLogic) OnFloat(floatValue float64) {
 	*s = slParser.FromInt(cast.ToInt(floatValue))
 }
 
+// OnString converts the string value to an integer and sets the SelectiveLogic to the corresponding value
+// If the conversion fails, the SelectiveLogic is set to the parsed string value (numeric values have priority over string values)
 func (s *SelectiveLogic) OnString(stringValue string) {
 	if intValue, err := cast.ToIntE(stringValue); err == nil {
 		*s = slParser.FromInt(intValue)
@@ -35,18 +40,22 @@ func (s *SelectiveLogic) OnString(stringValue string) {
 	*s = slParser.FromString(stringValue)
 }
 
+// OnBool converts the bool value to an integer and sets the SelectiveLogic to the corresponding value
 func (s *SelectiveLogic) OnBool(boolValue bool) {
 	*s = slParser.FromInt(cast.ToInt(boolValue))
 }
 
+// OnNull sets the SelectiveLogic to the default value
 func (s *SelectiveLogic) OnNull() {
 	*s = DefaultSelectiveLogic
 }
 
+// OnArray is a no-op for SelectiveLogic, as it is not a complex type (sets default value)
 func (s *SelectiveLogic) OnArray(arrayValue []any) {
 	*s = DefaultSelectiveLogic
 }
 
+// OnObject is a no-op for SelectiveLogic, as it is not a complex type (sets default value)
 func (s *SelectiveLogic) OnObject(objectValue map[string]any) {
 	*s = DefaultSelectiveLogic
 }
@@ -81,6 +90,7 @@ type SelectiveLogicParser interface {
 	FromInt(value int) SelectiveLogic
 }
 
+// selectiveLogicParser API to parse string into a valid SelectiveLogic
 type selectiveLogicParser struct {
 	values map[string]SelectiveLogic
 }
@@ -109,14 +119,18 @@ func (sl *selectiveLogicParser) FromString(value string) SelectiveLogic {
 	if selectiveValue, exists := sl.values[sanitizedValue]; exists {
 		return selectiveValue
 	}
-	// Return the DefaultSelectiveLogic value
+
+	// Return the DefaultSelectiveLogic value, otherwise
 	return DefaultSelectiveLogic
 }
 
 // FromInt converts an integer value to a SelectiveLogic
 func (sl *selectiveLogicParser) FromInt(value int) SelectiveLogic {
+	// Check if the integer value is within the valid range
 	if SelectiveLogicStart <= SelectiveLogic(value) && SelectiveLogic(value) <= SelectiveLogicEnd {
 		return SelectiveLogic(value)
 	}
+
+	// Return the DefaultSelectiveLogic value, otherwise
 	return DefaultSelectiveLogic
 }

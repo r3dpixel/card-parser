@@ -7,21 +7,27 @@ import (
 	"github.com/spf13/cast"
 )
 
+// String represents a string value
 type String string
 
+// NormalizeSymbols normalizes the symbols in the String
 func (s *String) NormalizeSymbols() {
 	*s = String(stringsx.NormalizeSymbols(string(*s)))
 }
+
+// OnValue populates the String with the value converted to a string
 func (s *String) OnValue(value any) {
 	if stringValue, err := cast.ToStringE(value); err == nil {
 		*s = String(stringValue)
 	}
 }
 
+// OnNull populates the String with an empty string
 func (s *String) OnNull() {
 	*s = String(stringsx.Empty)
 }
 
+// OnComplex populates the String with the JSON representation of the complex value
 func (s *String) OnComplex(complex any) {
 	*s = String(jsonx.String(complex))
 }

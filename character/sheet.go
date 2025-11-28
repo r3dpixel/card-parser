@@ -12,6 +12,7 @@ import (
 	"github.com/r3dpixel/toolkit/stringsx"
 )
 
+// cmpOptions are used to compare Sheets
 var cmpOptions = []gcmp.Option{
 	cmpopts.EquateEmpty(),
 	cmpopts.SortSlices(comparator[string]),
@@ -23,10 +24,13 @@ var cmpOptions = []gcmp.Option{
 }
 
 const (
+	// CreatorNotesSeparator is the separator between different parts of the merged creator notes
 	CreatorNotesSeparator = "\n\n"
-	AnonymousCreator      = "Anonymous"
+	// AnonymousCreator is the name used for anonymous creators
+	AnonymousCreator = "Anonymous"
 )
 
+// sheetWrapper is used to wrap the Sheet content in a JSON object for marshaling and unmarshalling
 type sheetWrapper struct {
 	Spec    Spec     `json:"spec"`
 	Version Version  `json:"spec_version"`
@@ -43,23 +47,29 @@ type Sheet struct {
 
 // DefaultSheet returns an empty chara sheet with the given Revision
 func DefaultSheet(revision Revision) *Sheet {
+	// Create a new sheet
 	sheet := &Sheet{}
+	// Set the revision
 	sheet.SetRevision(revision)
+	// Return the sheet
 	return sheet
 }
 
 // MarshalJSON marshals Sheet into JSON format with Content wrapped under "data" using Sonic
 func (s *Sheet) MarshalJSON() ([]byte, error) {
+	// Wrap the content in a JSON object
 	wrapper := sheetWrapper{
 		Spec:    s.Spec,
 		Version: s.Version,
 		Content: &s.Content,
 	}
+	// Encode the JSON object using Sonic
 	return sonicx.Config.Marshal(&wrapper)
 }
 
 // UnmarshalJSON decode a chara sheet from JSON using Sonic
 func (s *Sheet) UnmarshalJSON(data []byte) error {
+	// Decode the JSON object using Sonic
 	wrap, err := sonicx.GetFromString(stringsx.FromBytes(data))
 	if err != nil {
 		return err
@@ -84,8 +94,12 @@ func (s *Sheet) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+// SetRevision sets the sheet revision, spec and version
 func (s *Sheet) SetRevision(revision Revision) {
+	// Get the correct stamp
 	stamp := Stamps[revision]
+
+	// Set the revision, spec and version
 	s.Revision = revision
 	s.Spec = stamp.Spec
 	s.Version = stamp.Version
@@ -126,6 +140,7 @@ func FromBytes(b []byte) (*Sheet, error) {
 	return jsonx.FromBytes[*Sheet](b)
 }
 
+// comparator is used to compare slices of any type
 func comparator[T cmp.Ordered](a, b T) bool {
 	return a < b
 }

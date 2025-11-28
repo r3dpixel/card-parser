@@ -26,6 +26,7 @@ func DefaultBook() *Book {
 	return &Book{}
 }
 
+// NormalizeSymbols normalizes the book name and description, and all book entries
 func (b *Book) NormalizeSymbols() {
 	// Fix Quotes on the book name and description
 	b.Name.NormalizeSymbols()

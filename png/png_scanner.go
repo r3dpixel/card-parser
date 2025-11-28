@@ -62,6 +62,7 @@ var (
 	}
 )
 
+// scanningProcessor implements the Processor interface and is used to scan PNG files for character data
 type scanningProcessor struct {
 	// Scanner properties
 	header   []byte
@@ -76,11 +77,13 @@ type scanningProcessor struct {
 	err          error
 }
 
+// chunkDetails holds the length and discriminator of a PNG chunk
 type chunkDetails struct {
 	length   uint32
 	typeCode uint32
 }
 
+// newScanningProcessor creates a new PNG scanner processor
 func newScanningProcessor(header []byte, r io.ReadCloser) *scanningProcessor {
 	s := &scanningProcessor{
 		header:   header,
@@ -90,21 +93,25 @@ func newScanningProcessor(header []byte, r io.ReadCloser) *scanningProcessor {
 	return s
 }
 
+// ScanMode sets the scan mode for the processor
 func (p *scanningProcessor) ScanMode(mode ScanMode) Processor {
 	p.scanMode = mode
 	return p
 }
 
+// First sets the processor to scan for the first chara chunk
 func (p *scanningProcessor) First() Processor {
 	p.scanMode = First
 	return p
 }
 
+// LastVersion sets the processor to scan for the latest chara chunk (highest revision)
 func (p *scanningProcessor) LastVersion() Processor {
 	p.scanMode = LastVersion
 	return p
 }
 
+// LastLongest sets the processor to scan for the longest chara chunk
 func (p *scanningProcessor) LastLongest() Processor {
 	p.scanMode = LastLongest
 	return p

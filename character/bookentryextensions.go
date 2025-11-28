@@ -5,6 +5,7 @@ import (
 	"github.com/r3dpixel/toolkit/jsonx"
 )
 
+// BookEntryExtension is a string alias for the extension keys of a book entry
 type BookEntryExtension = string
 
 const (
@@ -21,12 +22,14 @@ const (
 )
 
 const (
-	DefaultEntryProbability float64 = 100.00
-	DefaultEntryDepth       int     = 4
+	DefaultEntryProbability float64 = 100.00 // Default probability for entries
+	DefaultEntryDepth       int     = 4      // Default depth for entries
 )
 
+// bookEntryExtensionFields is a helper variable that extracts the field names from BookEntryExtensions (typed extension struct)
 var bookEntryExtensionFields = jsonx.ExtractJsonFieldNames(BookEntryExtensions{})
 
+// BookEntryExtensions is a typed struct for extensions that can be added to a BookEntry
 type BookEntryExtensions struct {
 	LorePosition    property.LorePosition   `json:"position"`
 	Probability     property.Float          `json:"probability"`
@@ -40,6 +43,7 @@ type BookEntryExtensions struct {
 	Delay           property.Integer        `json:"delay"`
 }
 
+// DefaultBookEntryExtensions returns an initialized BookEntryExtensions struct with default values
 func DefaultBookEntryExtensions() BookEntryExtensions {
 	return BookEntryExtensions{
 		LorePosition:    property.DefaultLorePosition,

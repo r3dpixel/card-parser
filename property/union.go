@@ -7,17 +7,20 @@ import (
 	"github.com/spf13/cast"
 )
 
+// Union represents a union of integer and string values
 type Union struct {
 	IntValue    *int
 	StringValue *string
 }
 
+// OnFloat populates the Union with an integer value from a float64
 func (u *Union) OnFloat(floatValue float64) {
 	// If float value is detected, convert to integer and save it in the integer field
 	u.IntValue = ptr.Of(cast.ToInt(floatValue))
 	u.StringValue = nil
 }
 
+// OnString populates the Union with a string value from a string
 func (u *Union) OnString(stringValue string) {
 	// If string value is detected, convert to integer, and save it in the integer field
 	if intValue, err := cast.ToIntE(stringValue); err == nil {
@@ -30,24 +33,28 @@ func (u *Union) OnString(stringValue string) {
 	u.StringValue = &stringValue
 }
 
+// OnBool populates the Union with an integer value from a bool
 func (u *Union) OnBool(boolValue bool) {
 	// If bool value is detected, convert to integer and save it in the integer field
 	u.IntValue = ptr.Of(cast.ToInt(boolValue))
 	u.StringValue = nil
 }
 
+// OnNull populates the Union with a null value (zero value)
 func (u *Union) OnNull() {
 	// If null is detected, save 0 in the integer field
 	u.IntValue = ptr.Of(0)
 	u.StringValue = nil
 }
 
+// OnArray populates the Union with a string value from an array
 func (u *Union) OnArray(arrayValue []any) {
 	// If array is detected convert to json string and save it in the string field
 	u.StringValue = ptr.Of(jsonx.String(arrayValue))
 	u.IntValue = nil
 }
 
+// OnObject populates the Union with a string value from an object
 func (u *Union) OnObject(objectValue map[string]any) {
 	// If map is detected convert to json string and save it in the string field
 	u.StringValue = ptr.Of(jsonx.String(objectValue))

@@ -6,14 +6,23 @@ import (
 	"github.com/spf13/cast"
 )
 
+// Bool represents a boolean value
 type Bool bool
 
+// OnValue populates the Bool with the given value (converts to bool if possible)
+// NOTE: The original value is preserved, if input cannot be converted to bool
 func (b *Bool) OnValue(value any) {
 	if boolValue, err := cast.ToBoolE(value); err == nil {
 		*b = Bool(boolValue)
 	}
 }
-func (b *Bool) OnNull()               {}
+
+// OnNull no-op for Bool, as it cannot be null
+// NOTE: The original value is preserved
+func (b *Bool) OnNull() {}
+
+// OnComplex is a no-op for Bool, as it is not a complex type
+// NOTE: The original value is preserved
 func (b *Bool) OnComplex(complex any) {}
 
 // MarshalJSON marshals the Bool to JSON using Sonic

@@ -10,6 +10,7 @@ import (
 	"github.com/spf13/cast"
 )
 
+// LorePosition constants
 const (
 	BeforeCharPosition LorePosition = iota
 	AfterCharPosition
@@ -24,12 +25,16 @@ const (
 	DefaultLorePosition = BeforeCharPosition // DefaultLorePosition is BeforeCharPosition
 )
 
+// LorePosition represents the position of a book entry in the Lorebook
 type LorePosition int
 
+// OnFloat converts the float value to an integer and sets the LorePosition to the corresponding value
 func (l *LorePosition) OnFloat(floatValue float64) {
 	*l = lpParser.FromInt(cast.ToInt(floatValue))
 }
 
+// OnString converts the string value to an integer and sets the LorePosition to the corresponding value
+// If the conversion fails, the LorePosition is set to the parsed string value (numeric values have priority over string values)
 func (l *LorePosition) OnString(stringValue string) {
 	if intValue, err := cast.ToIntE(stringValue); err == nil {
 		*l = lpParser.FromInt(intValue)
@@ -38,18 +43,22 @@ func (l *LorePosition) OnString(stringValue string) {
 	*l = lpParser.FromString(stringValue)
 }
 
+// OnBool converts the bool value to an integer and sets the LorePosition to the corresponding value
 func (l *LorePosition) OnBool(boolValue bool) {
 	*l = lpParser.FromInt(cast.ToInt(boolValue))
 }
 
+// OnNull sets the LorePosition to the default value
 func (l *LorePosition) OnNull() {
 	*l = DefaultLorePosition
 }
 
+// OnArray is a no-op for LorePosition, as it is not a complex type (sets default value)
 func (l *LorePosition) OnArray(arrayValue []any) {
 	*l = DefaultLorePosition
 }
 
+// OnObject is a no-op for LorePosition, as it is not a complex type (sets default value)
 func (l *LorePosition) OnObject(objectValue map[string]any) {
 	*l = DefaultLorePosition
 }
@@ -84,6 +93,7 @@ type LorePositionParser interface {
 	FromInt(value int) LorePosition
 }
 
+// lorePositionParser API to parse string into a valid LorePosition
 type lorePositionParser struct {
 	strs map[string]LorePosition
 }
@@ -128,10 +138,11 @@ func (lp *lorePositionParser) FromString(value string) LorePosition {
 
 // FromInt converts an integer value to a LorePosition
 func (lp *lorePositionParser) FromInt(value int) LorePosition {
+	// Check if the integer value is within the valid range
 	if LorePositionStart <= LorePosition(value) && LorePosition(value) <= LorePositionEnd {
 		return LorePosition(value)
 	}
 
-	// If the integer value is not a valid lore position value, return the DefaultLorePosition value
+	// Return the DefaultLorePosition value, otherwise
 	return DefaultLorePosition
 }

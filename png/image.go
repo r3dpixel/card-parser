@@ -9,6 +9,7 @@ import (
 	"github.com/sunshineplan/imgconv"
 )
 
+// pngData PNG image data
 type pngData struct {
 	Header []byte
 	Body   []byte
@@ -37,20 +38,27 @@ func (p *pngData) Thumbnail(size int) (image.Image, error) {
 
 // ScaleDown Scale down the png image
 func (p *pngData) ScaleDown(size int) error {
+	// Decode the image
 	imageSource, err := p.Image()
 	if err != nil {
 		return err
 	}
 
+	// Scale down the image
 	downScaledImageSource := resizeImage(imageSource, size)
+
+	// Encode the scaled-down image to PNG bytes
 	writer := new(bytes.Buffer)
 	err = png.Encode(writer, downScaledImageSource)
 	if err != nil {
 		return err
 	}
 
+	// Extract the header and body from the writer
 	p.Header = writer.Next(headerSize + ihdrSize)
 	p.Body = writer.Bytes()
+
+	// Return nil (success)
 	return nil
 }
 

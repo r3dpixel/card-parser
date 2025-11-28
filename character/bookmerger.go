@@ -29,18 +29,29 @@ func NewBookMerger() *BookMerger {
 
 // AppendBook appends the given lorebook
 func (bm *BookMerger) AppendBook(book *Book) {
+	// If the book is nil, return (NO-OP)
 	if book == nil {
 		return
 	}
 
+	// If the book has no entries, move the description as the only entry
 	if len(book.Entries) == 0 {
+		// Set the only entry to the book description
 		book.Entries = []*BookEntry{FilledBookEntry(string(book.Name), string(book.Description))}
+		// Reset the book description
 		book.Description = property.String(stringsx.Empty)
 	}
 
+	// Append book properties
 	bm.AppendProperties(int(book.ScanDepth), int(book.TokenBudget), bool(book.RecursiveScanning))
+
+	// Append book name and description
 	bm.AppendNameAndDescription(string(book.Name), string(book.Description))
+
+	// Append book extensions
 	bm.AppendMapExtensions(book.Extensions)
+
+	// Append book entries
 	bm.AppendEntries(book.Entries)
 }
 

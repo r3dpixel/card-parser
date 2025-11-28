@@ -10,6 +10,7 @@ import (
 	"github.com/spf13/cast"
 )
 
+// Role constants
 const (
 	SystemRole Role = iota
 	UserRole
@@ -19,12 +20,16 @@ const (
 	DefaultRole = SystemRole
 )
 
+// Role represents the role of a character in a book
 type Role int
 
+// OnFloat converts the float value to an integer and sets the Role to the corresponding value
 func (r *Role) OnFloat(floatValue float64) {
 	*r = rlParser.FromInt(cast.ToInt(floatValue))
 }
 
+// OnString converts the string value to an integer and sets the Role to the corresponding value
+// If the conversion fails, the Role is set to the parsed string value (numeric values have priority over string values)
 func (r *Role) OnString(stringValue string) {
 	if intValue, err := cast.ToIntE(stringValue); err == nil {
 		*r = rlParser.FromInt(intValue)
@@ -33,18 +38,22 @@ func (r *Role) OnString(stringValue string) {
 	*r = rlParser.FromString(stringValue)
 }
 
+// OnBool converts the bool value to an integer and sets the Role to the corresponding value
 func (r *Role) OnBool(boolValue bool) {
 	*r = rlParser.FromInt(cast.ToInt(boolValue))
 }
 
+// OnNull sets the Role to the default value
 func (r *Role) OnNull() {
 	*r = DefaultRole
 }
 
+// OnArray is a no-op for Role, as it is not a complex type (sets default value)
 func (r *Role) OnArray(arrayValue []any) {
 	*r = DefaultRole
 }
 
+// OnObject is a no-op for Role, as it is not a complex type (sets default value)
 func (r *Role) OnObject(objectValue map[string]any) {
 	*r = DefaultRole
 }
@@ -79,6 +88,7 @@ type RoleParser interface {
 	FromInt(value int) Role
 }
 
+// roleParser API to parse string into a valid Role
 type roleParser struct {
 	values map[string]Role
 }
@@ -110,14 +120,18 @@ func (rl *roleParser) FromString(value string) Role {
 	if role, exists := rl.values[sanitizedValue]; exists {
 		return role
 	}
+
 	// Return the DefaultRole value
 	return DefaultRole
 }
 
 // FromInt converts an integer value to a SelectiveLogic
 func (rl *roleParser) FromInt(value int) Role {
+	// Check if the integer value is within the valid range
 	if RoleStart <= Role(value) && Role(value) <= RoleEnd {
 		return Role(value)
 	}
+
+	// Return the DefaultRole value, otherwise
 	return DefaultRole
 }

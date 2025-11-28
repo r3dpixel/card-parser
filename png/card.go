@@ -36,6 +36,7 @@ type CharacterCard struct {
 
 // PlaceholderCharacterCard returns a placeholder character card of the given size (black PNG image)
 func PlaceholderCharacterCard(size int) (*RawCard, error) {
+	// Create a new black image
 	img := image.NewGray(image.Rect(0, 0, size, size))
 
 	// Encode to PNG bytes
@@ -44,16 +45,19 @@ func PlaceholderCharacterCard(size int) (*RawCard, error) {
 		return nil, err
 	}
 
+	// Return the RawCard
 	return FromImage(io.NopCloser(&buf)).First().Get()
 }
 
 // ToRawJson converts a RawCard to a RawJsonCard by decoding the base64 data
 func (rc *RawCard) ToRawJson() (*RawJsonCard, error) {
+	// Create a new RawJsonCard
 	rawJsonCard := &RawJsonCard{
 		pngData:  rc.pngData,
 		Revision: rc.Revision,
 	}
 
+	// If there is no chara data, return the RawJsonCard as is
 	if len(rc.RawCharaData) == 0 {
 		return rawJsonCard, nil
 	}
@@ -65,16 +69,21 @@ func (rc *RawCard) ToRawJson() (*RawJsonCard, error) {
 		return nil, err
 	}
 
+	// Set the JSON data in the RawJsonCard
 	rawJsonCard.RawJsonData = decodedJSON[:n]
+
+	// Return the RawJsonCard
 	return rawJsonCard, nil
 }
 
 // ToCharacter converts a RawJsonCard to a CharacterCard by parsing the JSON data
 func (rjc *RawJsonCard) ToCharacter() (*CharacterCard, error) {
+	// Create a new CharacterCard
 	characterCard := &CharacterCard{
 		pngData: rjc.pngData,
 	}
 
+	// If there is no JSON data, return a default sheet
 	if len(rjc.RawJsonData) == 0 {
 		characterCard.Sheet = character.DefaultSheet(character.RevisionV2)
 		return characterCard, nil
@@ -92,7 +101,10 @@ func (rjc *RawJsonCard) ToCharacter() (*CharacterCard, error) {
 	sheet.Spec = stamp.Spec
 	sheet.Version = stamp.Version
 
+	// Set the sheet in the CharacterCard
 	characterCard.Sheet = sheet
+
+	// Return the CharacterCard
 	return characterCard, nil
 }
 
@@ -120,11 +132,13 @@ func (cc *CharacterCard) ToRawJson() (*RawJsonCard, error) {
 
 // ToRaw converts a RawJsonCard to a RawCard by encoding the JSON data as base64
 func (rjc *RawJsonCard) ToRaw() *RawCard {
+	// Create a new RawCard
 	rawCard := &RawCard{
 		pngData:  rjc.pngData,
 		Revision: rjc.Revision,
 	}
 
+	// If there is no JSON data, return the RawCard as is
 	if len(rjc.RawJsonData) == 0 {
 		return rawCard
 	}
@@ -133,25 +147,32 @@ func (rjc *RawJsonCard) ToRaw() *RawCard {
 	encodedJSON := make([]byte, base64.StdEncoding.EncodedLen(len(rjc.RawJsonData)))
 	base64.StdEncoding.Encode(encodedJSON, rjc.RawJsonData)
 
+	// Set the base64 data in the RawCard
 	rawCard.RawCharaData = encodedJSON
+
+	// Return the RawCard
 	return rawCard
 }
 
 // Decode converts a RawCard to a CharacterCard by decoding the base64 character data
 func (rc *RawCard) Decode() (*CharacterCard, error) {
+	// Decode the character data from base64
 	rjc, err := rc.ToRawJson()
 	if err != nil {
 		return nil, err
 	}
+	// Decode the JSON data into a Sheet
 	return rjc.ToCharacter()
 }
 
 // Encode converts a CharacterCard to a RawCard by encoding the character data as base64
 func (cc *CharacterCard) Encode() (*RawCard, error) {
+	// Encode the JSON data into a RawJsonCard
 	rjc, err := cc.ToRawJson()
 	if err != nil {
 		return nil, err
 	}
+	// Encode the RawJsonCard to a RawCard
 	return rjc.ToRaw(), nil
 }
 

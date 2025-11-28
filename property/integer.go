@@ -6,16 +6,23 @@ import (
 	"github.com/spf13/cast"
 )
 
+// Integer represents an integer value
 type Integer int
 
+// OnValue populates the Integer with the given value (converts to int if possible)
+// NOTE: The original value is preserved, if input cannot be converted to int
 func (i *Integer) OnValue(value any) {
 	if intValue, err := cast.ToIntE(value); err == nil {
 		*i = Integer(intValue)
 	}
 }
 
+// OnNull no-op for Integer, as it cannot be null
+// NOTE: The original value is preserved
 func (i *Integer) OnNull() {}
 
+// OnComplex is a no-op for Integer, as it is not a complex type
+// NOTE: The original value is preserved
 func (i *Integer) OnComplex(complex any) {}
 
 // MarshalJSON marshals the Integer to JSON using Sonic
